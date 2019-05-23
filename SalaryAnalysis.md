@@ -27,6 +27,7 @@ library(dplyr)
 
 ``` r
 library(readxl)
+#匯入時把薪資的部份轉成數字
 X103 <- read_excel("~/Downloads/103年各教育程度別初任人員經常性薪資─按大職類分.xlsx", 
                                          col_types = c("numeric", "text", "numeric", 
                                                        "numeric", "numeric", "numeric", 
@@ -65,13 +66,13 @@ X106 <- read_excel("~/Downloads/106年各教育程度別初任人員每人每月
 ### 106年度薪資較103年度薪資高的職業有哪些?
 
 ``` r
-jointable<-inner_join(X103,X106,by="大職業別")
-jointable<-jointable[,c(1,2,11,15,24)]
-jointable$SalaryRate <- jointable$`大學-薪資.y` / jointable$`大學-薪資.x`
-jointable <- filter(jointable, jointable$SalaryRate > 1)
-jointable <-arrange(jointable,desc(jointable$SalaryRate))
+jointable<-inner_join(X103,X106,by="大職業別")  #兩張表格對應結合
+jointable<-jointable[,c(1,2,11,15,24)]          #選只要的欄位做子集
+jointable$SalaryRate <- jointable$`大學-薪資.y` / jointable$`大學-薪資.x` #兩年比較大學薪資SalaryRate
+jointable <- filter(jointable, jointable$SalaryRate > 1) #篩選大於1的SalaryRate
+jointable <-arrange(jointable,desc(jointable$SalaryRate))#排序SalaryRate
 
-knitr::kable(head(jointable,10))
+knitr::kable(head(jointable,10)) #顯示前10筆資料
 ```
 
 | 年度.x | 大職業別                                  | 大學-薪資.x | 年度.y | 大學-薪資.y |  SalaryRate|
@@ -93,9 +94,9 @@ knitr::kable(head(jointable,10))
 
 ``` r
 jointable105 <-
-  filter(jointable, jointable$SalaryRate > 1.05)
+  filter(jointable, jointable$SalaryRate > 1.05) #篩選大於1.05的SalaryRate
 
-knitr::kable(head(jointable,10))
+knitr::kable(head(jointable,10)) #顯示前10筆資料
 ```
 
 | 年度.x | 大職業別                                  | 大學-薪資.x | 年度.y | 大學-薪資.y |  SalaryRate|
@@ -114,31 +115,40 @@ knitr::kable(head(jointable,10))
 ### 主要的職業種別是哪些種類呢?
 
 ``` r
-jointableCarrer <- gsub("-專業人員|-技術員及助理專業人員|-技術員及助理專業人員|-服務及銷售工作人員|-技藝、機械設備操作及組裝人員|-事務支援人員","",jointable105$大職業別)
-knitr::kable(table(jointableCarrer))
+jointableCarrer <- gsub("-專業人員|-技術員及助理專業人員|-技術員及助理專業人員|
+                        -服務及銷售工作人員|-技藝、機械設備操作及組裝人員|-事務支援人員",
+                        "",jointable105$大職業別) #把後面的職業清除只留下行業
+knitr::kable(table(jointableCarrer)) #看有哪些行業且查看出現次數
 ```
 
-| jointableCarrer        |  Freq|
-|:-----------------------|-----:|
-| 不動產業               |     1|
-| 住宿及餐飲業           |     4|
-| 其他服務業             |     5|
-| 專業、科學及技術服務業 |     5|
-| 工業及服務業部門       |     1|
-| 工業部門               |     1|
-| 支援服務業             |     3|
-| 教育服務業             |     5|
-| 服務業部門             |     5|
-| 營造業                 |     3|
-| 用水供應及污染整治業   |     6|
-| 礦業及土石採取業       |     1|
-| 藝術、娛樂及休閒服務業 |     3|
-| 製造業                 |     1|
-| 資訊及通訊傳播業       |     5|
-| 運輸及倉儲業           |     4|
-| 醫療保健服務業         |     2|
-| 金融及保險業           |     1|
-| 電力及燃氣供應業       |     1|
+| jointableCarrer                           |  Freq|
+|:------------------------------------------|-----:|
+| 不動產業                                  |     1|
+| 住宿及餐飲業                              |     3|
+| 住宿及餐飲業-服務及銷售工作人員           |     1|
+| 其他服務業                                |     5|
+| 專業、科學及技術服務業                    |     4|
+| 專業、科學及技術服務業-服務及銷售工作人員 |     1|
+| 工業及服務業部門                          |     1|
+| 工業部門                                  |     1|
+| 支援服務業                                |     2|
+| 支援服務業-服務及銷售工作人員             |     1|
+| 教育服務業                                |     4|
+| 教育服務業-服務及銷售工作人員             |     1|
+| 服務業部門                                |     5|
+| 營造業                                    |     2|
+| 營造業-服務及銷售工作人員                 |     1|
+| 用水供應及污染整治業                      |     5|
+| 用水供應及污染整治業-服務及銷售工作人員   |     1|
+| 礦業及土石採取業                          |     1|
+| 藝術、娛樂及休閒服務業                    |     3|
+| 製造業                                    |     1|
+| 資訊及通訊傳播業                          |     4|
+| 資訊及通訊傳播業-服務及銷售工作人員       |     1|
+| 運輸及倉儲業                              |     4|
+| 醫療保健服務業                            |     2|
+| 金融及保險業                              |     1|
+| 電力及燃氣供應業-服務及銷售工作人員       |     1|
 
 男女同工不同酬現況分析
 ----------------------
@@ -148,10 +158,10 @@ knitr::kable(table(jointableCarrer))
 ### 103到106年度的大學畢業薪資資料，哪些行業男生薪資比女生薪資多?
 
 ``` r
-X103SalaryRate<-filter(X103,X103$`大學-女/男`<100) %>%
-  arrange(`大學-女/男`)
-X103SalaryRate<-X103SalaryRate[,c(1,2,11,12)]
-knitr::kable(head(X103SalaryRate,10))
+X103SalaryRate<-filter(X103,X103$`大學-女/男`<100) %>% #篩選103年男生薪資大於女生的資料
+  arrange(`大學-女/男`)  #排序
+X103SalaryRate<-X103SalaryRate[,c(1,2,11,12)] #篩選需要的欄位
+knitr::kable(head(X103SalaryRate,10)) #顯示前10筆的資料
 ```
 
 | 年度 | 大職業別                                            | 大學-薪資 | 大學-女/男 |
@@ -170,10 +180,10 @@ knitr::kable(head(X103SalaryRate,10))
 從前10的職業中，可以發現礦業及土石採取業前5名進入2項，技藝、機械設備操作及組裝人員前5名進入3項，也有電力及燃氣供應業等等，這些行業有一定危險性或是需要較好的體力，故男生薪水比女生高是合理的。
 
 ``` r
-X104SR<-filter(X104,X104$`大學-女/男`<100) %>%
-  arrange(`大學-女/男`)
-X104SR<-X104SR[,c(1,2,11,12)]
-knitr::kable(head(X104SR,10))
+X104SR<-filter(X104,X104$`大學-女/男`<100) %>% #篩選103年男生薪資大於女生的資料
+  arrange(`大學-女/男`)  #排序由小到大
+X104SR<-X104SR[,c(1,2,11,12)] #篩選需要的欄位
+knitr::kable(head(X104SR,10)) #顯示前10筆的資料
 ```
 
 | 年度 | 大職業別                                          | 大學-薪資 | 大學-女/男 |
@@ -192,10 +202,10 @@ knitr::kable(head(X104SR,10))
 104年的數據皆高於90％，比起103年男女薪資比例差距已經有縮小的趨勢，但是電力及燃氣供應業、電力及燃氣供應業等還是在前10名。
 
 ``` r
-X105SR<-filter(X105,X105$`大學-女/男`<100) %>%
-  arrange(`大學-女/男`)
-X105SR<-X105SR[,c(1,2,11,12)]
-knitr::kable(head(X105SR,10))
+X105SR<-filter(X105,X105$`大學-女/男`<100) %>% #篩選105年男生薪資大於女生的資料
+  arrange(`大學-女/男`) #排序由小到大
+X105SR<-X105SR[,c(1,2,11,12)] #篩選需要的欄位
+knitr::kable(head(X105SR,10)) #顯示前10筆的資料
 ```
 
 | 年度 | 大職業別                                      | 大學-薪資 | 大學-女/男 |
@@ -214,10 +224,10 @@ knitr::kable(head(X105SR,10))
 105年產業別相比104年幾乎不一樣，包含不動產業、醫療保健服務業、用水供應及污染整治業、營造業、資訊及通訊傳播業、其他服務業。第一名仍為技藝、機械設備操作及組裝人員，可知這項職業類別較容易需要男生，所以每一年男女薪資比例差別的前10名都有這個職業別。
 
 ``` r
-X106SR<-filter(X106,X106$`大學-女/男`<100) %>%
-  arrange(`大學-女/男`)
-X106SR<-X106SR[,c(1,2,11,12)]
-knitr::kable(head(X106SR,10))
+X106SR<-filter(X106,X106$`大學-女/男`<100) %>% #篩選106年男生薪資大於女生的資料
+  arrange(`大學-女/男`) #排序由小到大
+X106SR<-X106SR[,c(1,2,11,12)] #篩選需要的欄位
+knitr::kable(head(X106SR,10))  #顯示前10筆的資料
 ```
 
 | 年度 | 大職業別                                      | 大學-薪資 | 大學-女/男 |
@@ -238,17 +248,17 @@ knitr::kable(head(X106SR,10))
 ### 哪些行業女生薪資比男生薪資多?
 
 ``` r
-X103SRGirl<-filter(X103,X103$`大學-女/男`>100) %>%
-  arrange(desc(`大學-女/男`))
-X103SRGirl<-X103SRGirl[,c(1,2,11,12)]
-knitr::kable(head(X103SRGirl,10))
+X103SRGirl<-filter(X103,X103$`大學-女/男`>100) %>%#篩選103年女生薪資大於男生的資料
+  arrange(desc(`大學-女/男`)) #排序由大到小
+X103SRGirl<-X103SRGirl[,c(1,2,11,12)]#篩選需要的欄位
+knitr::kable(head(X103SRGirl,10))#顯示前10筆的資料
 ```
 
 |  年度| 大職業別 |  大學-薪資|  大學-女/男|
 |-----:|:---------|----------:|-----------:|
 
 ``` r
-nrow(X103SRGirl)
+nrow(X103SRGirl) #證明真的一筆都沒有ＱＱ
 ```
 
     ## [1] 0
@@ -256,10 +266,10 @@ nrow(X103SRGirl)
 103年沒有任何一個行業女生薪資比男生多的。
 
 ``` r
-X104SRG<-filter(X104,X104$`大學-女/男`>100) %>%
-  arrange(desc(`大學-女/男`))
-X104SRG<-X104SRG[,c(1,2,11,12)]
-knitr::kable(head(X104SRG,10))
+X104SRG<-filter(X104,X104$`大學-女/男`>100) %>%#篩選104年女生薪資大於男生的資料
+  arrange(desc(`大學-女/男`)) #排序由大到小
+X104SRG<-X104SRG[,c(1,2,11,12)]#篩選需要的欄位
+knitr::kable(head(X104SRG,10))#顯示前10筆的資料
 ```
 
 | 年度 | 大職業別                                            | 大學-薪資 | 大學-女/男 |
@@ -269,10 +279,10 @@ knitr::kable(head(X104SRG,10))
 104年只有專業、科學及技術服務業-技藝、機械設備操作及組裝人員，這個職業薪水比男生高，差0.26%，可能因為科學及技術服務類的工作需要細心一些的女生，故工資比較高。
 
 ``` r
-X105SRG<-filter(X105,X105$`大學-女/男`>100) %>%
-  arrange(desc(`大學-女/男`))
-X105SRG<-X105SRG[,c(1,2,11,12)]
-knitr::kable(head(X105SRG,10))
+X105SRG<-filter(X105,X105$`大學-女/男`>100) %>%#篩選105年女生薪資大於男生的資料
+  arrange(desc(`大學-女/男`)) #排序由大到小
+X105SRG<-X105SRG[,c(1,2,11,12)]#篩選需要的欄位
+knitr::kable(head(X105SRG,10))#顯示前10筆的資料
 ```
 
 | 年度 | 大職業別              | 大學-薪資 | 大學-女/男 |
@@ -282,10 +292,10 @@ knitr::kable(head(X105SRG,10))
 105年只有金融及保險業-專業人員，這個職業薪水比男生高，差0.11%，但是原本104年的職業並沒有在這邊出現，表示薪資差異每一年都有浮動，並非男生一直較多或女生一直較多。
 
 ``` r
-X106SRG<-filter(X106,X106$`大學-女/男`>100) %>%
-  arrange(desc(`大學-女/男`))
-X106SRG<-X106SRG[,c(1,2,11,12)]
-knitr::kable(head(X106SRG,10))
+X106SRG<-filter(X106,X106$`大學-女/男`>100) %>%#篩選105年女生薪資大於男生的資料
+  arrange(desc(`大學-女/男`))#排序由大到小
+X106SRG<-X106SRG[,c(1,2,11,12)]#篩選需要的欄位
+knitr::kable(head(X106SRG,10))#顯示前10筆的資料
 ```
 
 | 年度 | 大職業別                            | 大學-薪資 | 大學-女/男 |
@@ -300,11 +310,11 @@ knitr::kable(head(X106SRG,10))
 以106年度的資料來看，哪個職業別念研究所最划算呢 (研究所學歷薪資與大學學歷薪資增加比例最多)?
 
 ``` r
-X106Difference<-X106[,c(1,2,11,13)]
-X106Difference$SalaryRate <- X106Difference$`研究所及以上-薪資` / X106Difference$`大學-薪資`
-X106Difference <- arrange(X106Difference, desc(SalaryRate))
-X106Difference<- X106Difference[complete.cases(X106Difference$SalaryRate), ]
-knitr::kable(head(X106Difference ,10))
+X106Difference<-X106[,c(1,2,11,13)]#篩選需要的欄位
+X106Difference$SalaryRate <- X106Difference$`研究所及以上-薪資` / X106Difference$`大學-薪資` #比較研究所與大學薪資比
+X106Difference <- arrange(X106Difference, desc(SalaryRate)) #排序 由大到小
+X106Difference<- X106Difference[complete.cases(X106Difference$SalaryRate), ] #把NA去除
+knitr::kable(head(X106Difference ,10))#顯示前10筆資料
 ```
 
 | 年度 | 大職業別                            | 大學-薪資 | 研究所及以上-薪資 |  SalaryRate|
@@ -331,9 +341,9 @@ knitr::kable(head(X106Difference ,10))
 X106Like <-
   subset(X106,
          大職業別 == "資訊及通訊傳播業-專業人員" | 大職業別 == "資訊及通訊傳播業" |
-         大職業別 == "藝術_娛樂及休閒服務業-專業人員")
-X106Like <- X106Like[,c(1,2,11,13)]
-knitr::kable(head(X106Like))
+         大職業別 == "藝術_娛樂及休閒服務業-專業人員") #選擇我有興趣的職業
+X106Like <- X106Like[,c(1,2,11,13)] #篩選需要的欄位
+knitr::kable(head(X106Like)) #顯示資料
 ```
 
 | 年度 | 大職業別                  | 大學-薪資 | 研究所及以上-薪資 |
@@ -346,8 +356,8 @@ knitr::kable(head(X106Like))
 ### 這些職業別研究所薪資與大學薪資差多少呢？
 
 ``` r
-X106Like$difference <- X106Like$`研究所及以上-薪資` - X106Like$`大學-薪資`
-knitr::kable(head(X106Like))
+X106Like$difference <- X106Like$`研究所及以上-薪資` - X106Like$`大學-薪資` #薪資差異
+knitr::kable(head(X106Like)) #顯示資料
 ```
 
 | 年度 | 大職業別                  | 大學-薪資 | 研究所及以上-薪資 |  difference|
